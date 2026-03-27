@@ -110,11 +110,19 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
+-- Use OSC 52 for clipboard so it works over SSH.
+-- Clipboard is independent from default yank register; use "+y to copy explicitly.
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+  },
+}
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -191,6 +199,10 @@ vim.diagnostic.config {
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+-- Clipboard keymaps (uses OSC 52 over SSH)
+vim.keymap.set({ 'n', 'v' }, '<leader>c', '"+y', { desc = '[C]opy to system clipboard' })
+vim.keymap.set({ 'n', 'v' }, '<leader>v', '"+p', { desc = 'Paste from system [C]lipboard' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
