@@ -18,11 +18,23 @@ return {
   ---@module 'neo-tree'
   ---@type neotree.Config
   opts = {
+    open_files_do_not_replace_types = { 'terminal', 'trouble', 'qf' },
     filesystem = {
       window = {
         mappings = {
           ['\\'] = 'close_window',
+          ['E'] = 'expand_all_nodes',
+          ['W'] = 'close_all_nodes',
+          ['/'] = 'fuzzy_finder',
         },
+      },
+    },
+    event_handlers = {
+      {
+        event = 'file_open_requested',
+        handler = function()
+          require('neo-tree.command').execute { action = 'close' }
+        end,
       },
     },
   },

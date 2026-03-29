@@ -876,7 +876,7 @@ require('lazy').setup({
     branch = 'main',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
-      local parsers = { 'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+      local parsers = { 'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'query', 'vim', 'vimdoc' }
       require('nvim-treesitter').install(parsers)
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
@@ -899,6 +899,56 @@ require('lazy').setup({
           vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end,
       })
+    end,
+  },
+
+  { -- Treesitter textobjects: select, move, and swap using treesitter nodes
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    branch = 'main',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    config = function()
+      require('nvim-treesitter-textobjects').setup {
+        select = { lookahead = true },
+        move = { set_jumps = true },
+      }
+
+      -- Select textobjects (use with v, d, c, y)
+      local select_map = {
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner',
+        ['aa'] = '@parameter.outer',
+        ['ia'] = '@parameter.inner',
+      }
+      for key, capture in pairs(select_map) do
+        vim.keymap.set({ 'x', 'o' }, key, function()
+          require('nvim-treesitter-textobjects.select').select_textobject(capture, 'textobjects')
+        end, { desc = 'Select ' .. capture })
+      end
+
+      -- Move to next/previous function or class
+      local move = require 'nvim-treesitter-textobjects.move'
+      vim.keymap.set({ 'n', 'x', 'o' }, ']m', function() move.goto_next_start('@function.outer', 'textobjects') end, { desc = 'Next function start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, ']M', function() move.goto_next_end('@function.outer', 'textobjects') end, { desc = 'Next function end' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[m', function() move.goto_previous_start('@function.outer', 'textobjects') end, { desc = 'Prev function start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[M', function() move.goto_previous_end('@function.outer', 'textobjects') end, { desc = 'Prev function end' })
+      vim.keymap.set({ 'n', 'x', 'o' }, ']]', function() move.goto_next_start('@class.outer', 'textobjects') end, { desc = 'Next class start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[[', function() move.goto_previous_start('@class.outer', 'textobjects') end, { desc = 'Prev class start' })
+
+      -- Swap parameters
+      local swap = require 'nvim-treesitter-textobjects.swap'
+      vim.keymap.set('n', '<leader>sa', function() swap.swap_next '@parameter.inner' end, { desc = '[S]wap next [A]rg' })
+      vim.keymap.set('n', '<leader>sA', function() swap.swap_previous '@parameter.inner' end, { desc = '[S]wap prev [A]rg' })
+
+      -- Make movements repeatable with ; and ,
+      local ts_repeat = require 'nvim-treesitter-textobjects.repeatable_move'
+      vim.keymap.set({ 'n', 'x', 'o' }, ';', ts_repeat.repeat_last_move_next)
+      vim.keymap.set({ 'n', 'x', 'o' }, ',', ts_repeat.repeat_last_move_previous)
+      vim.keymap.set({ 'n', 'x', 'o' }, 'f', ts_repeat.builtin_f_expr, { expr = true })
+      vim.keymap.set({ 'n', 'x', 'o' }, 'F', ts_repeat.builtin_F_expr, { expr = true })
+      vim.keymap.set({ 'n', 'x', 'o' }, 't', ts_repeat.builtin_t_expr, { expr = true })
+      vim.keymap.set({ 'n', 'x', 'o' }, 'T', ts_repeat.builtin_T_expr, { expr = true })
     end,
   },
 
