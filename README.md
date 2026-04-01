@@ -25,13 +25,20 @@ brew install neovim ripgrep fd tree-sitter make gcc unzip
 ```sh
 sudo add-apt-repository ppa:neovim-ppa/unstable -y
 sudo apt update
-sudo apt install neovim make gcc ripgrep fd-find tree-sitter-cli unzip git xclip
+sudo apt install neovim make gcc ripgrep fd-find unzip git xclip
 ```
 
 **Linux (Fedora):**
 
 ```sh
-sudo dnf install -y neovim gcc make git ripgrep fd-find tree-sitter-cli unzip
+sudo dnf install -y neovim gcc make git ripgrep fd-find unzip
+```
+
+**tree-sitter CLI** (all platforms) — distro packages are often too old, install via npm or cargo:
+
+```sh
+npm install -g tree-sitter-cli
+# or: cargo install tree-sitter-cli
 ```
 
 ### Installation

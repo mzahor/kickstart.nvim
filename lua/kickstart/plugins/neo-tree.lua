@@ -13,7 +13,7 @@ return {
   },
   lazy = false,
   keys = {
-    { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
+    { '\\', ':Neotree toggle reveal<CR>', desc = 'NeoTree toggle', silent = true },
   },
   ---@module 'neo-tree'
   ---@type neotree.Config
@@ -27,14 +27,6 @@ return {
           ['W'] = 'close_all_nodes',
           ['/'] = 'fuzzy_finder',
         },
-      },
-    },
-    event_handlers = {
-      {
-        event = 'file_open_requested',
-        handler = function()
-          require('neo-tree.command').execute { action = 'close' }
-        end,
       },
     },
   },

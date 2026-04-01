@@ -204,6 +204,14 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set({ 'n', 'v' }, '<leader>c', '"+y', { desc = '[C]opy to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, '<leader>v', '"+p', { desc = 'Paste from system [C]lipboard' })
 
+-- Search forward/backward for visual selection
+vim.keymap.set('v', '*', 'y/\\V<C-R>"<CR>N', { desc = 'Search forward for selection' })
+vim.keymap.set('v', '#', 'y?\\V<C-R>"<CR>N', { desc = 'Search backward for selection' })
+
+-- Navigate by display lines (useful for wrapped lines)
+vim.keymap.set('n', 'j', 'gj')
+vim.keymap.set('n', 'k', 'gk')
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -472,7 +480,7 @@ require('lazy').setup({
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
-          previewer = false,
+          previewer = true,
         })
       end, { desc = '[/] Fuzzily search in current buffer' })
 
