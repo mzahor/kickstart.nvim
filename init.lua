@@ -111,7 +111,7 @@ vim.o.mouse = 'a'
 vim.o.showmode = false
 
 -- Use OSC 52 for clipboard so it works over SSH.
--- Clipboard is independent from default yank register; use "+y to copy explicitly.
+-- All yank/paste operations use the system clipboard by default.
 vim.g.clipboard = {
   name = 'OSC 52',
   copy = {
@@ -123,6 +123,7 @@ vim.g.clipboard = {
     ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
   },
 }
+vim.o.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -199,10 +200,6 @@ vim.diagnostic.config {
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
--- Clipboard keymaps (uses OSC 52 over SSH)
-vim.keymap.set({ 'n', 'v' }, '<leader>c', '"+y', { desc = '[C]opy to system clipboard' })
-vim.keymap.set({ 'n', 'v' }, '<leader>v', '"+p', { desc = 'Paste from system [C]lipboard' })
 
 -- Search forward/backward for visual selection
 vim.keymap.set('v', '*', 'y/\\V<C-R>"<CR>N', { desc = 'Search forward for selection' })
@@ -416,7 +413,10 @@ require('lazy').setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
-        -- pickers = {}
+        pickers = {
+          lsp_document_symbols = { symbol_width = 60 },
+          lsp_dynamic_workspace_symbols = { symbol_width = 60 },
+        },
         extensions = {
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
         },
@@ -976,6 +976,8 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
+
+  { 'lambdalisue/suda.vim' },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
