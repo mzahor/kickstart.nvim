@@ -201,6 +201,13 @@ vim.diagnostic.config {
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Fold level keymaps: <leader>z0 through <leader>z9
+for i = 0, 9 do
+  vim.keymap.set('n', '<leader>z' .. i, function()
+    vim.wo.foldlevel = i
+  end, { desc = 'Set fold level to ' .. i })
+end
+
 -- Search forward/backward for visual selection
 vim.keymap.set('v', '*', 'y/\\V<C-R>"<CR>N', { desc = 'Search forward for selection' })
 vim.keymap.set('v', '#', 'y?\\V<C-R>"<CR>N', { desc = 'Search backward for selection' })
@@ -901,8 +908,9 @@ require('lazy').setup({
 
           -- enables treesitter based folds
           -- for more info on folds see `:help folds`
-          -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-          -- vim.wo.foldmethod = 'expr'
+          vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+          vim.wo.foldmethod = 'expr'
+          vim.wo.foldlevel = 99 -- start with all folds open
 
           -- enables treesitter based indentation
           vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
@@ -975,7 +983,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
 
   { 'lambdalisue/suda.vim' },
 
@@ -983,7 +991,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
