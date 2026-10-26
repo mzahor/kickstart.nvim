@@ -985,7 +985,14 @@ require('lazy').setup({
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
 
-  { 'lambdalisue/suda.vim' },
+  {
+    'lambdalisue/suda.vim',
+    lazy = false,
+    init = function()
+      -- Transparently read/write files that need root
+      vim.g.suda_smart_edit = 1
+    end,
+  },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
